@@ -50,7 +50,7 @@ export default defineComponent({
         <router-link to="/privacy" tag="a">Privacy Policy</router-link>
       </div>
       <div class="grid-flow-col justify-self-end">
-        <a href="https://github.com/guyzyl/whatsapp-contact-sync"
+        <a href="https://github.com/IrmakSamur/whatsapp-contact-sync"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

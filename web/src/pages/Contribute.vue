@@ -63,7 +63,7 @@ export default defineComponent({
           on <a href="/">whasync.com</a> and helps cover hosting costs.
           <br /><br />
           Prefer to host it yourself? The project is
-          <a href="https://github.com/guyzyl/whatsapp-contact-sync"
+          <a href="https://github.com/IrmakSamur/whatsapp-contact-sync"
             >open source</a
           > and free to run on your own computer.
         </p>

@@ -41,7 +41,7 @@ export default defineComponent({
           You can checkout the code and open new issues on the
           <a
             href="
-          https://github.com/guyzyl/whatsapp-contact-sync"
+          https://github.com/IrmakSamur/whatsapp-contact-sync"
             >GitHub repository</a
           >.
         </p>

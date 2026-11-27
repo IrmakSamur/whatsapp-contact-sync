@@ -12,19 +12,24 @@ import { deleteFromCache, getFromCache } from "./cache";
 import { verifyPurchaseWAId } from "./payments";
 import { toE164Digits } from "./phone";
 
-const wwebVersion = "2.2407.3";
+// The old pinned version (2.2407.3) no longer loads; by default use whatever
+// WhatsApp Web currently serves. Set WWEB_VERSION to pin a version again.
+const wwebVersion = process.env.WWEB_VERSION;
 const clientOptions = {
   puppeteer: {
     executablePath:
-      process.env.RUNNING_IN_DOCKER === "true"
+      process.env.CHROME_PATH ||
+      (process.env.RUNNING_IN_DOCKER === "true"
         ? "/usr/bin/chromium-browser"
-        : undefined,
+        : undefined),
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
   },
-  webVersionCache: {
-    type: "remote",
-    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
-  } as RemoteWebCacheOptions,
+  ...(wwebVersion && {
+    webVersionCache: {
+      type: "remote",
+      remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
+    } as RemoteWebCacheOptions,
+  }),
 };
 
 export function initWhatsApp(id: string): Client {

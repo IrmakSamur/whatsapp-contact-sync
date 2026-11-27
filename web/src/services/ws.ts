@@ -23,11 +23,10 @@ export async function initWs(): Promise<void> {
     isWsReady.resolve(true);
   };
 
+  // An error is always followed by a close event, so only onclose reconnects.
+  // Reconnecting from both doubled the connections on every failure.
   WS.onerror = (wsEvent) => {
     console.error(`WS error - ${wsEvent}`);
-    setTimeout(() => {
-      initWs();
-    }, errorTimeout);
   };
 
   WS.onclose = () => {

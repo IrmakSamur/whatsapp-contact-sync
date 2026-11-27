@@ -41,6 +41,25 @@ die wordt niet bewaard en is volgende keer toch opnieuw nodig.
 - `server/package-lock.json`: whatsapp-web.js bijgewerkt naar de nieuwste versie (fix voor de huidige WhatsApp Web).
 - `web/vite.config.ts` + `web/src/services/ws.ts`: WebSocket-verbinding gerepareerd (QR-code verscheen anders niet).
 
+## Op een andere pc
+
+Vereist: Node.js en Google Chrome. Het Google Cloud-project hoeft niet opnieuw.
+
+```
+git clone https://github.com/IrmakSamur/whatsapp-contact-sync.git C:\dev\projects\Whatsapp-Contact-Sync
+cd C:\dev\projects\Whatsapp-Contact-Sync\server
+$env:PUPPETEER_SKIP_DOWNLOAD="true"; npm install
+cd ..\web; npm install
+```
+
+Maak daarna `server\.env` aan (staat bewust niet op GitHub) met:
+```
+GOOGLE_CLIENT_ID=<uit je wachtwoordmanager>
+GOOGLE_CLIENT_SECRET=<uit je wachtwoordmanager>
+CHROME_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe
+```
+Secret kwijt? Google Cloud → project WhaSync → Google Auth Platform → Clients → WhaSync lokaal → Add secret.
+
 ## Als het ooit niet meer werkt
 
 WhatsApp Web verandert regelmatig. Meestal helpt het om de bibliotheek bij te werken:

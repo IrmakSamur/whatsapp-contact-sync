@@ -3,7 +3,6 @@ import { defineComponent } from "vue";
 import { event } from "vue-gtag";
 import { EventType, SyncProgress } from "../../../interfaces/api";
 import { addHandler, sendEvent } from "../services/ws";
-import { enforcePayments } from "../settings";
 
 interface ManualSyncData {
   existingPhoto: string | null;
@@ -20,7 +19,6 @@ export default defineComponent({
     totalContactsPushed: false,
     errorMessage: undefined as string | undefined,
     lastSyncReceived: null as number | null,
-    showCoffeeButton: true,
     isManualSync: false as boolean | undefined,
     isManualSyncLoading: false as boolean | undefined,
     manualSyncData: null as ManualSyncData | null,
@@ -31,9 +29,6 @@ export default defineComponent({
     addHandler(EventType.SyncConfirm, this.onSyncConfirm);
     this.initSync();
     setInterval(this.checkServerDisconnected, 5 * 1000);
-    enforcePayments.then((val) => {
-      this.showCoffeeButton = val;
-    });
   },
 
   methods: {

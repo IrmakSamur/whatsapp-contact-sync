@@ -1,116 +1,84 @@
 # WhatsApp Contact Sync
 
-> **This is a modified fork of [guyzyl/whatsapp-contact-sync](https://github.com/guyzyl/whatsapp-contact-sync)**,
-> licensed under the same Apache 2.0 + Commons Clause license (see [LICENSE](LICENSE)).
-> All credit for the original app goes to Guy Zylberberg.
->
-> Changes in this fork (to make it run locally on Windows with current WhatsApp Web):
-> - Updated `whatsapp-web.js` to latest `main` (fixes the `WAWebSocketModel` inject timeout, so the QR code appears again)
-> - `CHROME_PATH` env var to use an installed Chrome instead of Puppeteer's download; removed the stale pinned WhatsApp Web version (`server/src/whatsapp.ts`)
-> - Fixed the Vite dev proxy so `/api/ws` WebSocket upgrades are forwarded (`web/vite.config.ts`)
-> - WebSocket client no longer doubles reconnect attempts on every error (`web/src/services/ws.ts`)
-> - Added `start.ps1` (one-click launcher) and a Dutch setup guide, [SETUP-NL.md](SETUP-NL.md)
->
-> Note: for local dev the Google OAuth redirect URI is `http://localhost:4000/api/google_callback` (port 4000, not 8080).
-
 <p align="center">
     <img src="web/public/logo.png" alt="logo" width="150"/>
 </p>
 
-<p align="center">
-    <a href="https://www.buymeacoffee.com/guyzyl">
-        <img
-            src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-            alt="Buy Me A Coffee"
-            width="220px"
-        />
-    </a>
-</p>
+A small self-hosted web app that copies your contacts' **WhatsApp profile pictures into Google Contacts**.\
+Contacts are matched by phone number using [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) and the [Google People API](https://developers.google.com/people).
 
-A simple web app for syncing the profile pictures from WhatsApp to Google Contacts.\
-The app matches contacts based on their phone numbers, and utilizes
-[whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) and [Google People API](https://developers.google.com/people) to update the profile picture in Google Contacts.
+Everything runs on your own computer: your WhatsApp session and Google login never pass through a third-party server.
 
-## Demo
+## Features
 
-<p align="center">
-    <img src="https://user-images.githubusercontent.com/3015856/214192748-1681d9be-201a-4ffc-b8da-79857718b7eb.gif" width="600"/>
-</p>
+- Scan a QR code to link WhatsApp, sign in with Google, sync
+- **Overwrite existing images** (on by default) or keep photos you already set
+- **Manual sync**: compare old and new photo per contact and choose
+- Handles numbers saved without a country code (uses your own number's country)
+- ~1.5 s per photo (Google allows 60 photo updates per minute)
 
-## Why Was This Developed?
+## Requirements
 
-Whenever someone used to call me or I looked them up in my contacts, they all apear as colorful circles with a single letter in it.\
-The annoying part is that every single person I know has a WhatsApp account which has a profile picture. They are both based on the same phone number but the picture is only available in one of them.\
-In order to fix this grievence I developed this app which allows anyone to sync their contacts photos from WhatsApp to Google Contacts.
+- [Node.js](https://nodejs.org/) (v22 or newer)
+- Google Chrome
+- A Google Cloud OAuth client (free, one-time setup, see below)
 
-## How To Use
+## Setup (once)
 
-The app is extremley easy to use (and self explantory):
+### 1. Install
 
-1. Go to [whasync.com](https://whasync.com/)
-2. Press "Get Started"
-3. Scan the QR code with WhatsApp to authorize it
-4. Connect you Google account
-5. Choose you sync options
-6. That's it :)
+```powershell
+git clone https://github.com/IrmakSamur/whatsapp-contact-sync.git
+cd whatsapp-contact-sync\server
+$env:PUPPETEER_SKIP_DOWNLOAD="true"; npm install
+cd ..\web; npm install
+```
 
-The whole process is very simple and automated, so you don't need to worry about anything else.\
-Setting up should take less then a minute, and syncing should take about 1 second per photo (due to Google's API rate limitiations of 60 requests per user per minute)
+### 2. Google OAuth client
 
-## How to Run Locally
+1. In the [Google Cloud Console](https://console.cloud.google.com), create a project.
+2. Enable the **Google People API**.
+3. Configure the **OAuth consent screen**: user type *External*, leave it in *Testing*, and add your own Google account as a **test user**.
+4. Create an **OAuth client ID** of type *Web application* with this **Authorized redirect URI**:
+   `http://localhost:4000/api/google_callback`
 
-In order for the backend to function, it requires an OAuth 2.0 client ID and secret.\
-Since (for obvious reasons) this is a private app, you will need to create one for your own.\
-You can see instructions on how to do that [here](https://developers.google.com/workspace/guides/create-credentials).\
-Once you do that, create the file `server/.env`, and set the following environment variables:
+### 3. Create `server/.env`
 
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
+```
+GOOGLE_CLIENT_ID=<your client id>.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=<your client secret>
+CHROME_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe
+```
 
-You also need to add the following **Authorized Redirect URI** to your OAuth 2.0 client in the [Google Cloud Console](https://console.cloud.google.com) based on how you are running the app:
+`server/.env` is git-ignored. Keep a copy of the secret in a password manager.
 
-EXAMPLES:
-- Local dev: `http://localhost:8080/api/google_callback`
-- Docker (port 80): `http://localhost/api/google_callback`
-- Production: `https://<your-domain>/api/google_callback`
+## Usage
 
-Once that's done, you can go ahead and run the app:
+Windows: right-click `start.ps1` → **Run with PowerShell**. It starts the backend (port 8080) and the web app (port 4000) and opens http://localhost:4000.
+
+Then: **Get Started** → scan the QR code (WhatsApp → *Linked devices*) → sign in with Google → choose options → keep the tab open until "Sync complete!". Close the two PowerShell windows when done, and remove the linked device in WhatsApp.
+
+A Dutch step-by-step guide is in [SETUP-NL.md](SETUP-NL.md).
+
+### Manual start (any OS)
 
 ```bash
-# Run backend
+# backend (needs the variables from server/.env in the environment)
+cd server && npx ts-node --transpile-only .
+# web app
+cd web && npm run dev
+```
+
+## Troubleshooting
+
+WhatsApp Web changes regularly. If the QR code stops appearing, update the WhatsApp library:
+
+```powershell
 cd server
-npm install
-npm run dev
-
-# Run web app
-cd web
-npm install
-npm run dev
+$env:PUPPETEER_SKIP_DOWNLOAD="true"; npm install github:pedroslopez/whatsapp-web.js#main
 ```
 
-The server build uses TypeScript 7. Both packages also install Microsoft's
-`@typescript/typescript6` compatibility package under the `typescript` alias
-because `ts-node` and `vue-tsc` still require the JavaScript compiler API.
-The `@typescript/native` alias provides TypeScript 7's `tsc` executable.
+## License
 
-## Build Docker Images
-
-There are 3 different `Dockerfile`s for this app:
-
-- [`Dockerfile`](Dockerfile) - This is an image containing both the backend and the web app
-- [`Dockerfile`](web/Dockerfile) - An image containing only the web app
-- [`Dockerfile`](server/Dockerfile) - An image containing only the backend
-
-In order to build and run the complete app, you need to run the following commands:
-
-```bash
-docker build -t whasync .
-docker run --rm -it -p 80:80 --env-file server/.env whasync
-```
-
-In order to build the separate images for the backend and frontend, execute the following commands from the projects main directory:
-
-```bash
-docker build -t whasync-backend --env-file server/.env -f server/Dockerfile .
-docker build -t whasync-web -f web/Dockerfile .
-```
+Apache 2.0 with Commons Clause (free to use and modify, not to sell). See [LICENSE](LICENSE).\
+Based on [whatsapp-contact-sync](https://github.com/guyzyl/whatsapp-contact-sync) by Guy Zylberberg.

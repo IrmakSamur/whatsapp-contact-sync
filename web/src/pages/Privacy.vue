@@ -1,112 +1,48 @@
 <script setup lang="ts"></script>
 
-<!-- This page exists since it's required by Google for publishing an OAuth app -->
-<!-- Generated using https://github.com/digitalmalayali/free-website-privacy-policy-generator -->
 <template>
   <div class="h-max bg-base-200 py-6 px-12 grid place-content-center">
     <div class="max-w-4xl bg-base-200">
-      <h1 class="text-5xl font-bold">Privacy Policy</h1>
+      <h1 class="text-5xl font-bold">Privacy</h1>
       <p>
-        Guy Zylberberg operates the website "WhatsApp Contact Sync" at
-        https://whasync.com. I take your privacy seriously. To better protect
-        your privacy, I provide this privacy policy notice explaining the way
-        your personal information is collected and used.
+        WhatsApp Contact Sync is a self-hosted app. It runs on your own
+        computer, and there is no central server that receives your data.
       </p>
-      <h2 class="text-2xl font-bold pt-4">Collection of Routine Information</h2>
+      <h2 class="text-2xl font-bold pt-4">What the app accesses</h2>
+      <ul class="list-disc pl-6">
+        <li>
+          <strong>WhatsApp:</strong> your contacts' phone numbers and profile
+          pictures, through a WhatsApp Web session you link by scanning a QR
+          code.
+        </li>
+        <li>
+          <strong>Google Contacts:</strong> your contacts list, to match phone
+          numbers and update contact photos, through a Google sign-in you
+          approve.
+        </li>
+      </ul>
+      <h2 class="text-2xl font-bold pt-4">What happens with it</h2>
       <p>
-        This website track basic information about its visitors. This
-        information includes, but is not limited to, IP addresses, browser
-        details, timestamps and referring pages. None of this information can
-        personally identify specific visitors to this website. The information
-        is tracked for routine administration and maintenance purposes.
+        Data only travels between this computer, WhatsApp and Google. Nothing is
+        sent anywhere else, and nothing is stored after the app stops: the
+        WhatsApp session and Google sign-in are kept in memory only.
       </p>
-      <h2 class="text-2xl font-bold pt-4">Cookies</h2>
+      <h2 class="text-2xl font-bold pt-4">Revoking access</h2>
       <p>
-        Where necessary, this website uses cookies to store information about a
-        visitor's preferences and history to better serve the visitor and/or
-        present the visitor with customized content.
+        Remove the linked device in WhatsApp under
+        <em>Settings → Linked devices</em>, and remove the app's access to your
+        Google account at
+        <a href="https://myaccount.google.com/permissions" target="_blank"
+          >myaccount.google.com/permissions</a
+        >.
       </p>
-      <h2 class="text-2xl font-bold pt-4">
-        Advertisement and Other Third Parties
-      </h2>
+      <h2 class="text-2xl font-bold pt-4">Questions</h2>
       <p>
-        Advertising partners and other third parties may use cookies, scripts
-        and/or web beacons to track visitor activities on this website to
-        display advertisements and other useful information. Such tracking is
-        done directly by the third parties through their servers and is subject
-        to their privacy policies. This website has no access or control over
-        these cookies, scripts and/or web beacons that may be used by third
-        parties.
-      </p>
-      <div>
-        <p>
-          I have included links on this website for your use and reference. I am
-          not responsible for the privacy policies on these websites. You should
-          be aware that the privacy policies of these websites may differ from
-          my own.
-        </p>
-        <p>
-          Link to the privacy policy of third-party service providers used by
-          the website
-        </p>
-        <ul>
-          <li>
-            <a
-              href="https://policies.google.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Google Analytics</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.whatsapp.com/legal/privacy-policy/"
-              target="_blank"
-              rel="noopener noreferrer"
-              >WhatsApp</a
-            >
-          </li>
-        </ul>
-      </div>
-      <h2 class="text-2xl font-bold pt-4">Security</h2>
-      <p>
-        The security of your personal information is important to me, but
-        remember that no method of transmission over the Internet, or method of
-        electronic storage, is 100% secure. While I strive to use commercially
-        acceptable means to protect your personal information, I cannot
-        guarantee its absolute security.
-      </p>
-      <h2 class="text-2xl font-bold pt-4">Changes To This Privacy Policy</h2>
-      <p>
-        This Privacy Policy is effective as of 2022-08-15 and will remain in
-        effect except concerning any changes in its provisions in the future,
-        which will be in effect immediately after being posted on this page. I
-        reserve the right to update or change my Privacy Policy at any time and
-        you should check this Privacy Policy periodically. If I make any
-        material changes to this Privacy Policy, I will notify you either
-        through the email address you have provided me or by placing a prominent
-        notice on my website.
-      </p>
-      <h2 class="text-2xl font-bold pt-4">Contact Information</h2>
-      <p>
-        For any questions or concerns regarding the privacy policy, please send
-        me an email at guyzyl@gmail.com.
-      </p>
-      <p></p>
-      <br />
-      <p>
-        This privacy policy page was created by
+        Open an issue on the
         <a
-          href="https://github.com/ArthurGareginyan/privacy-policy-template/"
+          href="https://github.com/IrmakSamur/whatsapp-contact-sync"
           target="_blank"
-          rel="noopener noreferrer"
-          >Arthur Gareginyan </a
-        >and modified/generated by
-        <a
-          href="https://free-privacy-policy-generator.digitalmalayali.in/"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Free &amp; Open Source Privacy Policy Generator</a
+          >GitHub repository</a
         >.
       </p>
     </div>

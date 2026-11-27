@@ -10,7 +10,7 @@
     "build": "tsc",
     "test": "node --require ts-node/register/transpile-only --test src/**/*.test.ts"
   },
-  "author": "guyzyl",
+  "author": "IrmakSamur",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^2.3.0",

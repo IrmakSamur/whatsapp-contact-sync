@@ -1,5 +1,18 @@
 # WhatsApp Contact Sync
 
+> **This is a modified fork of [guyzyl/whatsapp-contact-sync](https://github.com/guyzyl/whatsapp-contact-sync)**,
+> licensed under the same Apache 2.0 + Commons Clause license (see [LICENSE](LICENSE)).
+> All credit for the original app goes to Guy Zylberberg.
+>
+> Changes in this fork (to make it run locally on Windows with current WhatsApp Web):
+> - Updated `whatsapp-web.js` to latest `main` (fixes the `WAWebSocketModel` inject timeout, so the QR code appears again)
+> - `CHROME_PATH` env var to use an installed Chrome instead of Puppeteer's download; removed the stale pinned WhatsApp Web version (`server/src/whatsapp.ts`)
+> - Fixed the Vite dev proxy so `/api/ws` WebSocket upgrades are forwarded (`web/vite.config.ts`)
+> - WebSocket client no longer doubles reconnect attempts on every error (`web/src/services/ws.ts`)
+> - Added `start.ps1` (one-click launcher) and a Dutch setup guide, [SETUP-NL.md](SETUP-NL.md)
+>
+> Note: for local dev the Google OAuth redirect URI is `http://localhost:4000/api/google_callback` (port 4000, not 8080).
+
 <p align="center">
     <img src="web/public/logo.png" alt="logo" width="150"/>
 </p>

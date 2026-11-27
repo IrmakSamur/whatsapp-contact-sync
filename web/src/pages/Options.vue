@@ -30,7 +30,7 @@ export default defineComponent({
         title: "Overwrite existing images",
         description: "If enabled, existing contact images will be overwritten.",
         target: "overwrite_photos",
-        value: false,
+        value: true,
         onChange: disableOtherOptionsOnChange("overwrite_photos"),
       },
     ],

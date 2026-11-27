@@ -14,6 +14,7 @@ Everything runs on your own computer: your WhatsApp session and Google login nev
 - Scan a QR code to link WhatsApp, sign in with Google, sync
 - **Overwrite existing images** (on by default) or keep photos you already set
 - **Manual sync**: compare old and new photo per contact and choose
+- **Remove all contact photos**: deletes the photo of every Google contact (asks for confirmation; cannot be undone)
 - Handles numbers saved without a country code (uses your own number's country)
 - ~1.5 s per photo (Google allows 60 photo updates per minute)
 

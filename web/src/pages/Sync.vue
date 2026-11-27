@@ -20,6 +20,8 @@ export default defineComponent({
     errorMessage: undefined as string | undefined,
     lastSyncReceived: null as number | null,
     isManualSync: false as boolean | undefined,
+    isRemoval: false as boolean | undefined,
+    totalContacts: 0,
     isManualSyncLoading: false as boolean | undefined,
     manualSyncData: null as ManualSyncData | null,
   }),
@@ -27,6 +29,7 @@ export default defineComponent({
   mounted() {
     addHandler(EventType.SyncProgress, this.onSyncProgress);
     addHandler(EventType.SyncConfirm, this.onSyncConfirm);
+    this.isRemoval = this.$route.query.remove_photos === "true";
     this.initSync();
     setInterval(this.checkServerDisconnected, 5 * 1000);
   },
@@ -62,6 +65,8 @@ export default defineComponent({
       this.syncCount = progress.syncCount;
       this.errorMessage = progress.error;
       this.isManualSync = progress.isManualSync;
+      this.isRemoval = progress.isRemoval;
+      if (progress.totalContacts) this.totalContacts = progress.totalContacts;
       if (progress.image) {
         this.images.push(progress.image);
         if (this.images.length > this.imageDisplayedCount) this.images.shift();
@@ -86,10 +91,10 @@ export default defineComponent({
   <div id="home" class="hero h-full bg-base-200">
     <div class="hero-content text-center">
       <div class="max-w-md">
-        <h1 class="text-5xl font-bold">Sync In Progress</h1>
+        <h1 class="text-5xl font-bold">{{ isRemoval ? "Removing Photos" : "Sync In Progress" }}</h1>
         
         <p class="py-6" v-if="!isManualSync">
-          Your contacts are syncing, you can sit back and relax.
+          {{ isRemoval ? "Contact photos are being removed from Google Contacts." : "Your contacts are syncing, you can sit back and relax." }}
           <br /><br />
           (Syncing will stop if the tab is closed)
         </p>
@@ -161,10 +166,14 @@ export default defineComponent({
           ></progress>
         </div>
         <div :hidden="syncProgress !== 100">
-          <div class="badge badge-primary w-5/6">Sync complete!</div>
+          <div class="badge badge-primary w-5/6">{{ isRemoval ? "Removal complete!" : "Sync complete!" }}</div>
         </div>
 
-        <div class="avatar-group -space-x-6 inline-flex pt-4">
+        <p class="pt-4" v-if="isRemoval">
+          Removed {{ syncCount }} of {{ totalContacts }} photos
+        </p>
+
+        <div class="avatar-group -space-x-6 inline-flex pt-4" v-if="!isRemoval">
           <div
             class="avatar"
             v-for="(image, index) in images.slice(-imageDisplayedCount)"

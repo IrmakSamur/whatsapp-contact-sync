@@ -33,11 +33,32 @@ export default defineComponent({
         value: true,
         onChange: disableOtherOptionsOnChange("overwrite_photos"),
       },
+      {
+        title: "Remove all contact photos",
+        description:
+          "If enabled, nothing is synced: the photo of every Google contact is deleted instead.",
+        target: "remove_photos",
+        value: false,
+        onChange: disableOtherOptionsOnChange("remove_photos"),
+      },
     ],
   }),
+  computed: {
+    isRemoval(): boolean {
+      return this.options.some((o) => o.target === "remove_photos" && o.value);
+    },
+  },
   mounted() {},
   methods: {
     startSync() {
+      if (
+        this.isRemoval &&
+        !window.confirm(
+          "This deletes the photo of EVERY contact in your Google Contacts, including photos you added yourself. This cannot be undone. Continue?"
+        )
+      )
+        return;
+
       const searchParams = new URLSearchParams();
       this.options.forEach((option) => {
         searchParams.set(option.target, String(option.value));
@@ -88,8 +109,12 @@ export default defineComponent({
           </label>
 
           <div class="pt-6">
-            <button class="btn btn-primary px-8" @click="startSync()">
-              Start Sync
+            <button
+              class="btn px-8"
+              :class="isRemoval ? 'btn-error' : 'btn-primary'"
+              @click="startSync()"
+            >
+              {{ isRemoval ? "Remove All Photos" : "Start Sync" }}
             </button>
           </div>
         </div>

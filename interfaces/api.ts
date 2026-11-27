@@ -19,6 +19,7 @@ export interface SyncProgress {
   image?: string;
   error?: string;
   isManualSync?: boolean;
+  isRemoval?: boolean;
 }
 
 export interface SessionStatus {
@@ -31,4 +32,5 @@ export interface SessionStatus {
 export interface SyncOptions {
   overwrite_photos?: string; // "true" or "false" (since converted to string via query params)
   manual_sync?: string; // "true" or "false" (since converted to string via query params)
+  remove_photos?: string; // "true" or "false": delete every contact photo instead of syncing
 }

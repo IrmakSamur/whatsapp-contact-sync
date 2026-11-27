@@ -38,7 +38,8 @@ export async function getOAuth2ClientFromCode(
 }
 
 export async function listContacts(
-  auth: Auth.OAuth2Client
+  auth: Auth.OAuth2Client,
+  includeWithoutNumbers: boolean = false
 ): Promise<SimpleContact[]> {
   const people: people_v1.People = google.people({ version: "v1", auth });
 
@@ -56,8 +57,8 @@ export async function listContacts(
     nextPageToken = res.data.nextPageToken!;
     const connections = res.data.connections;
 
-    const contacts = connections!
-      .filter((connection) => connection.phoneNumbers)
+    const contacts = (connections ?? [])
+      .filter((connection) => includeWithoutNumbers || connection.phoneNumbers)
       .map(
         (connection) =>
           <SimpleContact>{
@@ -67,8 +68,8 @@ export async function listContacts(
             // otherwise fall back to the raw `value` so numbers saved in a local
             // format (no +CC) are normalized later against the user's region
             // instead of being silently dropped.
-            numbers: connection
-              .phoneNumbers!.map(
+            numbers: (connection.phoneNumbers ?? [])
+              .map(
                 (phoneNumber) => phoneNumber.canonicalForm ?? phoneNumber.value
               )
               .filter((number): number is string => Boolean(number)),
@@ -101,5 +102,17 @@ export async function updateContactPhoto(
       resourceName: resourceName,
       requestBody: { photoBytes: photo },
     })
+  );
+}
+
+export async function deleteContactPhoto(
+  auth: Auth.OAuth2Client,
+  resourceName: string
+): Promise<void> {
+  const people: people_v1.People = google.people({ version: "v1", auth });
+
+  // Deleting a photo is idempotent, so transient failures are safe to retry.
+  await retryTransient(() =>
+    people.people.deleteContactPhoto({ resourceName: resourceName })
   );
 }

@@ -4,7 +4,7 @@ import { RateLimiter } from "limiter";
 import { Client } from "whatsapp-web.js";
 
 import { EventType, SyncOptions } from "../../interfaces/api";
-import { listContacts, updateContactPhoto } from "./gapi";
+import { deleteContactPhoto, listContacts, updateContactPhoto } from "./gapi";
 import { downloadFile, loadContacts } from "./whatsapp";
 import { sendEvent, sendMessageAndWait } from "./ws";
 import { SimpleContact } from "./interfaces";
@@ -28,6 +28,10 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   const ws: WebSocket = getFromCache(id, "ws");
   const whatsappClient: Client = getFromCache(id, "whatsapp");
   const gAuth: Auth.OAuth2Client = getFromCache(id, "gauth");
+
+  if (syncOptions.remove_photos === "true") {
+    return removeAllPhotos(ws, gAuth, limiter);
+  }
 
   let googleContacts: SimpleContact[];
   let whatsappContacts: Map<string, string>;
@@ -139,6 +143,65 @@ export async function initSync(id: string, syncOptions: SyncOptions) {
   sendEvent(ws, EventType.SyncProgress, {
     progress: 100,
     syncCount: syncCount,
+  });
+
+  ws.close();
+}
+
+// Deletes the photo of every Google contact that has one (including contacts
+// without a phone number). WhatsApp is not used for this.
+async function removeAllPhotos(
+  ws: WebSocket,
+  gAuth: Auth.OAuth2Client,
+  limiter: RateLimiter
+) {
+  let contactsWithPhoto: SimpleContact[];
+  try {
+    contactsWithPhoto = (await listContacts(gAuth, true)).filter((c) => c.hasPhoto);
+  } catch (e) {
+    console.error(e);
+    if (ws.readyState === WebSocket.OPEN) {
+      sendEvent(ws, EventType.SyncProgress, {
+        progress: 0,
+        syncCount: 0,
+        isRemoval: true,
+        error: "Failed to load contacts, please try again.",
+      });
+    }
+    return;
+  }
+
+  let removedCount = 0;
+  sendEvent(ws, EventType.SyncProgress, {
+    progress: 0,
+    syncCount: 0,
+    totalContacts: contactsWithPhoto.length,
+    isRemoval: true,
+  });
+
+  for (const [index, contact] of contactsWithPhoto.entries()) {
+    if (ws.readyState !== WebSocket.OPEN) return; // Stop if user disconnected.
+
+    try {
+      await limiter.removeTokens(1);
+      await deleteContactPhoto(gAuth, contact.id);
+      removedCount++;
+    } catch (e) {
+      console.error(`Error removing photo of contact ${contact.id}:`, e);
+    }
+
+    sendEvent(ws, EventType.SyncProgress, {
+      progress: ((index + 1) / contactsWithPhoto.length) * 100,
+      syncCount: removedCount,
+      totalContacts: contactsWithPhoto.length,
+      isRemoval: true,
+    });
+  }
+
+  sendEvent(ws, EventType.SyncProgress, {
+    progress: 100,
+    syncCount: removedCount,
+    isRemoval: true,
   });
 
   ws.close();
